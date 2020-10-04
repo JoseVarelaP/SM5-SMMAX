@@ -35,7 +35,7 @@ local t = Def.ActorFrame{
         local iCombo = param.Misses or param.Combo;
         if not iCombo or iCombo < ShowComboAt then
             c.Label:visible(false)
-            c.Number:visible(true)
+            c.Number:visible(false)
             return
         end
 
