@@ -66,6 +66,15 @@ for k,pn in pairs( GAMESTATE:GetHumanPlayers() ) do
 			s:finishtweening():targetnumber( stats:GetScore() )
 		end
     }
+
+    ScoreFrame[#ScoreFrame+1] = Def.BitmapText{
+        File = "Common Normal",
+        InitCommand=function(self)
+            self:xy( SCREEN_CENTER_X, pn == PLAYER_1 and -14 or 2 ):zoom(0.5)
+            local str = GAMESTATE:GetPlayerState(pn):GetPlayerOptionsString("ModsLevel_Preferred")
+            self:settext(str):maxwidth( 360 )
+        end,
+    }
 end
 
 t[#t+1] = ScoreFrame
