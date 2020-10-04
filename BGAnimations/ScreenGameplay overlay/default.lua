@@ -9,9 +9,14 @@ t[#t+1] = Def.Sprite{
 }
 
 -- Stage Number
+local CalcStage = function()
+    local s = GAMESTATE:GetCurrentStage()
+    if s == "Stage_Final" then return "final" end
+    return ToEnumShortString(s)
+end
 t[#t+1] = Def.Sprite{
-    Texture=THEME:GetPathG("ScreenSelectMusic/stage",ToEnumShortString( GAMESTATE:GetCurrentStage() )),
     OnCommand=function(self)
+        self:Load( THEME:GetPathG("ScreenSelectMusic/stage",CalcStage()) )
         self:xy( SCREEN_CENTER_X, 54 ):addy(-100):sleep(0.5):linear(1):addy(100)
     end
 }
@@ -28,31 +33,6 @@ ScoreFrame[#ScoreFrame+1] = Def.Sprite{
 }
 
 for k,pn in pairs( GAMESTATE:GetHumanPlayers() ) do
-    ScoreFrame[#ScoreFrame+1] = Def.Sprite{
-        Texture=THEME:GetPathG("ScreenGameplay/difficulty","icons"),
-        OnCommand=function(self)
-            self:xy( SCREEN_CENTER_X + (pn == PLAYER_1 and 60 or 580) - 320, -36 ):animate(0)
-            self:visible( false )
-            -- Time to set the difficulty.
-            local diffs = {
-                ["Difficulty_Beginner"] = 0,
-                ["Difficulty_Easy"] = 2,
-                ["Difficulty_Medium"] = 4,
-                ["Difficulty_Hard"] = 6,
-                ["Difficulty_Challenge"] = 8,
-            }
-
-            if GAMESTATE:GetCurrentSteps(pn):GetDifficulty() ~= "Difficulty_Edit" then
-                self:visible( true )
-                local srt = diffs[GAMESTATE:GetCurrentSteps(pn):GetDifficulty()]
-                if pn == PLAYER_2 then
-                    srt = srt + 1
-                end
-                self:setstate( srt )
-            end
-        end
-    }
-
     ScoreFrame[#ScoreFrame+1] = Def.RollingNumbers{
         File = THEME:GetPathF("", "_numbers2"),
         InitCommand=function(s)
@@ -78,4 +58,39 @@ for k,pn in pairs( GAMESTATE:GetHumanPlayers() ) do
 end
 
 t[#t+1] = ScoreFrame
+
+for k,pn in pairs( GAMESTATE:GetHumanPlayers() ) do
+    t[#t+1] = Def.Sprite{
+        Texture=THEME:GetPathG("ScreenGameplay/difficulty","icons"),
+        OnCommand=function(self)
+            self:x( SCREEN_CENTER_X + (pn == PLAYER_1 and 60 or 580) - 320 ):animate(0)
+            self:visible( false )
+            -- Time to set the difficulty.
+            local diffs = {
+                ["Difficulty_Beginner"] = 0,
+                ["Difficulty_Easy"] = 2,
+                ["Difficulty_Medium"] = 4,
+                ["Difficulty_Hard"] = 6,
+                ["Difficulty_Challenge"] = 8,
+            }
+
+            if GAMESTATE:GetCurrentSteps(pn):GetDifficulty() ~= "Difficulty_Edit" then
+                self:visible( true )
+                local srt = diffs[GAMESTATE:GetCurrentSteps(pn):GetDifficulty()]
+                if pn == PLAYER_2 then
+                    srt = srt + 1
+                end
+                self:setstate( srt )
+            end
+
+            local ypos = { SCREEN_BOTTOM - 70, 58 }
+
+            -- Check for reverse
+            local isReverse = GAMESTATE:GetPlayerState(pn):GetPlayerOptions("ModsLevel_Preferred"):Reverse()
+            self:y( isReverse ~= 0 and ypos[2] or ypos[1] )
+            self:addx( pn == PLAYER_1 and -200 or 200 ):sleep(0.5):linear(1):addx( pn == PLAYER_1 and 200 or -200 )
+        end
+    }
+end
+
 return t
