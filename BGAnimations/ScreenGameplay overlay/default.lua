@@ -11,12 +11,12 @@ t[#t+1] = Def.Sprite{
 -- Stage Number
 local CalcStage = function()
     local s = GAMESTATE:GetCurrentStage()
-    if s == "Stage_Final" then return "final" end
-    return ToEnumShortString(s)
+    if s == "Stage_Final" then return "Stage_Final" end
+    return s
 end
 t[#t+1] = Def.Sprite{
     OnCommand=function(self)
-        self:Load( THEME:GetPathG("ScreenSelectMusic/stage",CalcStage()) )
+        self:Load( THEME:GetPathG("","ScreenSelectMusic/"..CalcStage()) )
         self:xy( SCREEN_CENTER_X, 54 ):addy(-100):sleep(0.5):linear(1):addy(100)
     end
 }

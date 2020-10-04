@@ -8,7 +8,7 @@ t[#t+1] = Def.Quad{
 }
 
 t[#t+1] = Def.Sprite{
-    Texture=THEME:GetPathG("","ScreenStage/"..ToEnumShortString( GAMESTATE:GetCurrentStage() )),
+    Texture=THEME:GetPathG("","ScreenStage/"..GAMESTATE:GetCurrentStage()),
     OnCommand=function(self)
         self:xy( SCREEN_CENTER_X, SCREEN_CENTER_Y+90 ):sleep(0.1):decelerate(0.6):y( SCREEN_CENTER_Y )
     end
