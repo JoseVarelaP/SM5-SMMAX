@@ -1,7 +1,5 @@
-GameColor.PlayerColors["PlayerNumber_P1"] = color("0.4,1.0,0.8,1")
-GameColor.PlayerColors["PlayerNumber_P2"] = color("1.0,0.5,0.2,1")
-
-
+GameColor.PlayerColors.PLAYER_1 = color("0.4,1.0,0.8,1")
+GameColor.PlayerColors.PLAYER_2 = color("1.0,0.5,0.2,1")
 
 function TextBannerAfterSet(self)
     local Title=self:GetChild("Title")

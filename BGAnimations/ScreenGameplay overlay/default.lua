@@ -46,7 +46,7 @@ for k,pn in pairs( GAMESTATE:GetHumanPlayers() ) do
                 self:visible( true )
                 local srt = diffs[GAMESTATE:GetCurrentSteps(pn):GetDifficulty()]
                 if pn == PLAYER_2 then
-                    srt = srt * 2
+                    srt = srt + 1
                 end
                 self:setstate( srt )
             end
