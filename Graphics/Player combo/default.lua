@@ -40,16 +40,18 @@ local t = Def.ActorFrame{
             return
         end
 
-        c.Label:visible(true)
-        c.Number:visible(true)
-        
-        param.Zoom = scale( iCombo, 0, ZoomCoords.Range, ZoomCoords.Min, ZoomCoords.Max )
-        param.Zoom = clamp( param.Zoom, ZoomCoords.Min, ZoomCoords.Max )
-        
-        c.Number:settext( string.format("%i", iCombo) )
-        :stoptweening():zoom( param.Zoom * PulseZoom ):linear( TweenSeconds ):zoom( param.Zoom )
-        -- There is support for MidPoint coloring like ITG in 3.9's Src, but the default theme
-        -- never used it, so it won't be included here.
+        if param.Combo then
+            c.Label:visible(true)
+            c.Number:visible(true)
+            
+            param.Zoom = scale( iCombo, 0, ZoomCoords.Range, ZoomCoords.Min, ZoomCoords.Max )
+            param.Zoom = clamp( param.Zoom, ZoomCoords.Min, ZoomCoords.Max )
+            
+            c.Number:settext( string.format("%i", iCombo) )
+            :stoptweening():zoom( param.Zoom * PulseZoom ):linear( TweenSeconds ):zoom( param.Zoom )
+            -- There is support for MidPoint coloring like ITG in 3.9's Src, but the default theme
+            -- never used it, so it won't be included here.
+        end
     end
 }
 
