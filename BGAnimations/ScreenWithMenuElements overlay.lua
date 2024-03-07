@@ -29,7 +29,7 @@ return Def.ActorFrame{
     Def.Sprite{
         Texture=DetermineHeader(),
         OnCommand=function(self)
-            self:align(0,0)
+            self:align(0,0):addx(640):spring(0.5):addx(-640)
         end
     },
     loadfile( THEME:GetPathB("","SharedItems/HelpDisplay.lua") )()
