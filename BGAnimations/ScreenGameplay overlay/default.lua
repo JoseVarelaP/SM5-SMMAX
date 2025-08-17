@@ -51,7 +51,17 @@ for k,pn in pairs( GAMESTATE:GetHumanPlayers() ) do
         File = "Common Normal",
         InitCommand=function(self)
             self:xy( SCREEN_CENTER_X, pn == PLAYER_1 and -14 or 2 ):zoom(0.5)
-            local str = GAMESTATE:GetPlayerState(pn):GetPlayerOptionsString("ModsLevel_Preferred")
+            local mods = GAMESTATE:GetPlayerState(pn):GetPlayerOptionsArray("ModsLevel_Preferred")
+            local allowedmods = {}
+            -- OutFox displays all modifiers, which 3.9 didn't do, so we need to filter out stuff like
+            -- FailImmediate and Overhead, since those were defaults.
+            for i,v in ipairs(mods) do
+                if v ~= "FailImmediate" and v ~= "FailImmediateContinue" and v ~= "Overhead" then
+                    allowedmods[#allowedmods+1] = v
+                end
+            end
+
+            local str = table.concat(allowedmods, ', ')
             self:settext(str):maxwidth( 360 )
         end,
     }

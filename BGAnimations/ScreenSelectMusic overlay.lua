@@ -66,6 +66,42 @@ BnFrame[#BnFrame+1] = Def.ActorFrame{
 	}
 }
 
+-- Sort Display
+BnFrame[#BnFrame+1] = Def.Sprite{
+	InitCommand=function(self)
+		self:xy( SCREEN_CENTER_X + 252 - 320 , SCREEN_CENTER_Y + 121 - 240 )
+	end,
+	SortOrderChangedMessageCommand=function(self)
+		local sort = GAMESTATE:GetSortOrder()
+		lua.ReportScriptError(sort)
+		local available = {
+			["artist"] = true,
+			["bpm"] = true,
+			["courses"] = true,
+			["easy meter"] = true,
+			["endless"] = true,
+			["group"] = true,
+			["hard meter"] = true,
+			["medium meter"] = true,
+			["nonstop"] = true,
+			["oni"] = true,
+			["players best"] = true,
+			["preferred"] = true,
+			["roulette"] = true,
+			["sort"] = true,
+			["title"] = true,
+			["top grade"] = true,
+		}
+
+		local nm = ToLower(ToEnumShortString(sort))
+		if available[nm] then
+			self:Load( THEME:GetPathG("MusicSortDisplay/MusicSortDisplay",nm) ):visible(true)
+		else
+			self:visible(false)
+		end
+	end
+}
+
 for i=0,4 do
 	BnFrame[#BnFrame+1] = Def.Sprite{
 		Texture=THEME:GetPathG("DifficultyDisplay","bar"),

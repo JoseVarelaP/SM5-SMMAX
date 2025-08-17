@@ -1,1 +1,1 @@
-return loadfile( THEME:GetPathB("SharedItems/Fade","NoMotion") )()
+return loadfile( THEME:GetPathB("SharedItems/Fade","out") )()

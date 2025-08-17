@@ -1,5 +1,6 @@
 return Def.HelpDisplay {
     File="Common normal",
+    Condition=THEME:GetMetric(Var "LoadingScreen", "ShowHelp"),
     OnCommand=function(self)
         self:zoom(0.5):zoomy(0):linear(0.5):zoomy(0.5):diffuseblink()
     end,
