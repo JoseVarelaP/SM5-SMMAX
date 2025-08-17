@@ -23,11 +23,47 @@ local CalcStage = function()
 	if s == "Stage_Final" then return "Stage_Final" end
 	return s
 end
-BnFrame[#BnFrame+1 ] = Def.Sprite{
+BnFrame[#BnFrame+1] = Def.Sprite{
 	OnCommand=function(self)
 		self:Load( THEME:GetPathG("","ScreenSelectMusic/"..CalcStage()) )
 		self:xy( SCREEN_CENTER_X + 40 - 320 , SCREEN_CENTER_Y + 121 - 240 )
 	end
+}
+
+-- BPM Display
+BnFrame[#BnFrame+1] = Def.ActorFrame{
+	InitCommand=function(self)
+		self:halign(1):xy( SCREEN_CENTER_X + 160 - 320 , SCREEN_CENTER_Y + 121 - 240 )
+	end,
+	OnCommand=function(self)
+		self.DrawFunction = function(self)
+			local bpm = self:GetChild("BPMDisplay")
+			bpm:Draw()
+
+			self:GetChild("Label"):diffuse( bpm:GetDiffuse() ):Draw()
+		end
+
+		self:SetDrawFunction(self.DrawFunction)
+	end,
+	Def.BPMDisplay{
+		Name="BPMDisplay",
+		Font="BPMDisplay",
+		OnCommand=function(self)
+			self:SetFromGameState()
+			self:halign(1)
+		end,
+		CurrentSongChangedMessageCommand=function(self)
+			self:SetFromSong( GAMESTATE:GetCurrentSong() or nil )
+		end
+	},
+
+	Def.Sprite{
+		Name="Label",
+		Texture=THEME:GetPathG("BPMDisplay","label"),
+		OnCommand=function(self)
+			self:halign(0)
+		end
+	}
 }
 
 for i=0,4 do
@@ -64,7 +100,8 @@ for i,pn in pairs( GAMESTATE:GetHumanPlayers() ) do
 			local steps = GAMESTATE:GetCurrentSteps(pn)
 			if not steps then return end
 
-			self:playcommand("UpdateVal",{Value=steps:GetMeter()})
+			local cd = GetCustomDifficulty(steps:GetStepsType(), steps:GetDifficulty())
+			self:playcommand("UpdateVal",{Value=steps:GetMeter(),Col=CustomDifficultyToColor(cd)})
 		end
 	}
 
@@ -72,10 +109,14 @@ for i,pn in pairs( GAMESTATE:GetHumanPlayers() ) do
 		diffPlacement[#diffPlacement+1] = Def.Sprite{
 			Texture=THEME:GetPathG("DifficultyMeter","bar"),
 			InitCommand=function (self)
-				self:x( 10 * (i-1) ):animate(false)
+				self:x( 10 * (i-1) ):animate(false):shadowlength(2)
 			end,
 			UpdateValCommand=function (self,params)
-				self:diffuse( (i <= params.Value) and Color.White or color("#787878") )
+				self:diffuse( (i <= params.Value) and params.Col or BoostColor(ColorDarkTone(params.Col), 0.5) )
+				:stopeffect()
+				if params.Value > 10 then
+					self:glowshift()
+				end
 			end
 		}
 	end
@@ -115,18 +156,23 @@ for i,pn in pairs( GAMESTATE:GetHumanPlayers() ) do
 			end
 		},
 
-		Def.Sprite{
-			Texture=THEME:GetPathG("ScreenSelectMusic/meter frame", ToEnumShortString(pn) ),
+		Def.ActorFrame{
 			OnCommand=function(self)
 				self:xy( SCREEN_CENTER_X + pos[i] + 22 - 320, SCREEN_CENTER_Y + 432 - 240 )
-			end
-		},
-
-		diffPlacement .. {
-			InitCommand=function (self)
-				self:xy( SCREEN_CENTER_X , SCREEN_CENTER_Y )
 			end,
+			Def.Sprite{
+				Texture=THEME:GetPathG("ScreenSelectMusic/meter frame", ToEnumShortString(pn) ),
+				OnCommand=function(self)
+				end
+			},
+	
+			diffPlacement .. {
+				InitCommand=function (self)
+					self:xy( -40,0 )
+				end,
+			}
 		}
+
 	}
 end
 

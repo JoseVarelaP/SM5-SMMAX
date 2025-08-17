@@ -21,15 +21,31 @@ end
 
 return Def.ActorFrame{
     Def.Sprite{
+        Condition=THEME:GetMetric(Var "LoadingScreen", "ShowFooter"),
         Texture=THEME:GetPathG("_shared","footer"),
         OnCommand=function(self)
-            self:align(0,1):y(SCREEN_BOTTOM)
+            self:valign(1):xy(SCREEN_CENTER_X,SCREEN_BOTTOM)
+        end
+    },
+
+    Def.Quad{
+        Condition=THEME:GetMetric(Var "LoadingScreen", "ShowHeader"),
+        OnCommand=function(self)
+            self:align(1,0):xy(SCREEN_RIGHT,0):diffuse(color("#0073a5")):zoomto(600,44)
+            if string.find( Var "LoadingScreen", "Options" ) then
+                self:visible(false)
+            end
         end
     },
     Def.Sprite{
+        Condition=THEME:GetMetric(Var "LoadingScreen", "ShowHeader"),
         Texture=DetermineHeader(),
         OnCommand=function(self)
-            self:align(0,0):addx(640):spring(0.5):addx(-640)
+            self:x(SCREEN_CENTER_X)
+            self:valign(0):addx(SCREEN_WIDTH):spring(0.5):addx(-SCREEN_WIDTH)
+        end,
+        OffCommand=function(self)
+            self:bouncebegin(0.5):addx(SCREEN_WIDTH)
         end
     },
     loadfile( THEME:GetPathB("","SharedItems/HelpDisplay.lua") )()

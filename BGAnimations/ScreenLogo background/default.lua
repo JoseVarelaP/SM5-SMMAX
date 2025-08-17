@@ -10,7 +10,12 @@ local GameModeGraphic = function()
 end
 
 return Def.ActorFrame{
-    Def.Sprite{ Texture="1.png", OnCommand=function(self) self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y) end },
+    Def.Sprite{
+        Texture="1.png",
+        OnCommand=function(self)
+            self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y)
+        end
+    },
     Def.Sprite{ Texture=GameModeGraphic(),
         OnCommand=function(self)
             self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y):zoomy(0):sleep(0.5)
