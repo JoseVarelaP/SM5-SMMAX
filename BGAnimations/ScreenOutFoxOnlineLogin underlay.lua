@@ -48,5 +48,5 @@ return Def.ActorFrame{
             self:bouncebegin(0.5):addx(SCREEN_WIDTH)
         end
     },
-    loadfile( THEME:GetPathB("","SharedItems/HelpDisplay.lua") )()
+    loadfile( THEME:GetPathB("","SharedItems/HelpDisplay.lua") )(),
 }

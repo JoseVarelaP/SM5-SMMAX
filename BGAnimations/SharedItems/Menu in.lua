@@ -12,7 +12,7 @@ return Def.ActorFrame{
     Def.Sprite{
         Texture=THEME:GetPathG("","_moveon"),
         OnCommand=function(self)
-            self:Center():zoomy(1):linear(0.5):zoomy(0):sleep(0):visible(false)
+            self:Center():zoomy(1):linear(0.5):zoomy(0):diffuse(Alpha(Color.Black,0))
         end,
     }
 }

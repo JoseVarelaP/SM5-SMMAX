@@ -4,10 +4,10 @@ local plrDecided = { [PLAYER_1] = false, [PLAYER_2] = false }
 local curPage = 1
 
 local options = {
-    { screen="ScreenSelectMusic", pm="regular", diff="beginner", name="beginner"  },
-    { screen="ScreenSelectMusic", pm="regular", diff="easy", name="easy"  },
-    { screen="ScreenSelectMusic", pm="regular", diff="medium", name="medium"  },
-    { screen="ScreenSelectMusic", pm="regular", diff="hard", name="hard"  },
+    { screen="ScreenSelectGroup", pm="regular", diff="beginner", name="beginner"  },
+    { screen="ScreenSelectGroup", pm="regular", diff="easy", name="easy"  },
+    { screen="ScreenSelectGroup", pm="regular", diff="medium", name="medium"  },
+    { screen="ScreenSelectGroup", pm="regular", diff="hard", name="hard"  },
     ----------------------------------------------------
     { screen="ScreenInstructions", pm="nonstop", name="nonstop"  },
     { screen="ScreenInstructions", pm="oni", name="oni"  },
@@ -32,8 +32,6 @@ local function HighestChoice()
 end
 
 local function myCustomInput(event)
-    -- First, let's verify that the input is being performed when pressing.
-    -- There are three modes of input, which will be explain later in this chapter.
     if event.type == "InputEventType_FirstPress" then
         local validButton = false
         -- Ok, we have pressed the button once. Time to detect what button was pressed.
@@ -134,7 +132,8 @@ local iconsActorFrame = Def.ActorFrame{
         iconHandler = self
     end,
     PreSwitchPageMessageCommand=function(self)
-        self:stoptweening():linear(0.2):x( (-SCREEN_WIDTH - SCREEN_CENTER_X+(44-320)) * (curPage-1) )
+        self:stoptweening():linear(0.2):x(
+            curPage == 1 and 0 or (-SCREEN_WIDTH - 600) )
     end
 }
 
@@ -148,7 +147,7 @@ for index, option in ipairs(options) do
 
             -- shift page 2 a bit
             if index > 4 then
-                self:x( SCREEN_WIDTH + SCREEN_CENTER_X+(-52-320) + (149 * index) )
+                self:x( SCREEN_WIDTH + (SCREEN_CENTER_X+(-52-320) + (149 * index)) )
                 :y( (index % 2) == 1 and 220 or 180 )
             end
         end,
@@ -189,7 +188,9 @@ end
 for ipn,pn in ipairs(GAMESTATE:GetEnabledPlayers()) do
     iconsActorFrame[#iconsActorFrame+1] = Def.ActorFrame{
         InitCommand=function(self)
-            self:playcommand("UpdatePosition")
+            local playerXOffset = pn == PLAYER_1 and -40 or 40
+            local itempos = self:GetParent():GetChild("Item"..plrChoice[pn])
+            self:xy( itempos:GetX() + playerXOffset, itempos:GetY() + 180 )
         end,
         UpdatePositionCommand=function(self)
             local playerXOffset = pn == PLAYER_1 and -40 or 40
@@ -268,7 +269,7 @@ t[#t+1] = Def.Sprite{
 t[#t+1] = Def.Sprite{
     Texture=THEME:GetPathG("ScreenSelectDifficulty/ScreenSelectDifficulty more","page2"),
     InitCommand=function(self)
-        self:xy(SCREEN_CENTER_X + (700-320), SCREEN_CENTER_Y + (90-240))
+        self:xy(SCREEN_WIDTH + SCREEN_CENTER_X + (700-320), SCREEN_CENTER_Y + (90-240))
     end,
     PreSwitchPageMessageCommand=function(self,params)
         self:stoptweening():linear(0.2):x( SCREEN_CENTER_X + (700-320) + (-SCREEN_WIDTH * (curPage-1)) )
