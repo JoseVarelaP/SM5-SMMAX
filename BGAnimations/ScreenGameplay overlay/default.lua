@@ -2,6 +2,14 @@ local t = Def.ActorFrame{}
 
 -- Load Life Frame
 t[#t+1] = Def.Sprite{
+    Condition=GetScreenAspectRatio() > 1.333,
+    Texture=THEME:GetPathG("ScreenGameplay/loop life","frame"),
+    OnCommand=function(self)
+        self:valign(0):xy( SCREEN_CENTER_X, -2 ):addy(-100):sleep(0.5):linear(1):addy(100):zoomtowidth(SCREEN_WIDTH)
+    end
+}
+
+t[#t+1] = Def.Sprite{
     Texture=THEME:GetPathG("ScreenGameplay/life","frame"),
     OnCommand=function(self)
         self:xy( SCREEN_CENTER_X, 36 ):addy(-100):sleep(0.5):linear(1):addy(100)
@@ -15,6 +23,7 @@ local CalcStage = function()
     return s
 end
 t[#t+1] = Def.Sprite{
+    Condition=not GAMESTATE:IsCourseMode(),
     OnCommand=function(self)
         self:Load( THEME:GetPathG("","ScreenSelectMusic/"..CalcStage()) )
         self:xy( SCREEN_CENTER_X, 54 ):addy(-100):sleep(0.5):linear(1):addy(100)
@@ -26,6 +35,11 @@ local ScoreFrame = Def.ActorFrame{
     OnCommand=function(self)
         self:y( SCREEN_BOTTOM-32 ):addy(100):sleep(0.5):linear(1):addy(-100)
     end
+}
+ScoreFrame[#ScoreFrame+1] = Def.Sprite{
+    Condition=GetScreenAspectRatio() > 1.333,
+    Texture=THEME:GetPathG("ScreenGameplay/loop score","frame"),
+    OnCommand=function(self) self:x( SCREEN_CENTER_X ):zoomtowidth(SCREEN_WIDTH) end
 }
 ScoreFrame[#ScoreFrame+1] = Def.Sprite{
     Texture=THEME:GetPathG("ScreenGameplay/score","frame"),
@@ -74,7 +88,16 @@ for k,pn in pairs( GAMESTATE:GetHumanPlayers() ) do
         Texture=THEME:GetPathG("ScreenGameplay/difficulty","icons"),
         OnCommand=function(self)
             self:x( SCREEN_CENTER_X + (pn == PLAYER_1 and 60 or 580) - 320 ):animate(0)
-            self:visible( false )
+            self:visible( false ):playcommand("SetFrame")
+
+            local ypos = { SCREEN_BOTTOM - 70, 58 }
+
+            -- Check for reverse
+            local isReverse = GAMESTATE:GetPlayerState(pn):GetPlayerOptions("ModsLevel_Preferred"):Reverse()
+            self:y( isReverse ~= 0 and ypos[2] or ypos[1] )
+            self:addx( pn == PLAYER_1 and -200 or 200 ):sleep(0.5):linear(1):addx( pn == PLAYER_1 and 200 or -200 )
+        end,
+        SetFrameCommand=function(self)
             -- Time to set the difficulty.
             local diffs = {
                 ["Difficulty_Beginner"] = 0,
@@ -92,14 +115,8 @@ for k,pn in pairs( GAMESTATE:GetHumanPlayers() ) do
                 end
                 self:setstate( srt )
             end
-
-            local ypos = { SCREEN_BOTTOM - 70, 58 }
-
-            -- Check for reverse
-            local isReverse = GAMESTATE:GetPlayerState(pn):GetPlayerOptions("ModsLevel_Preferred"):Reverse()
-            self:y( isReverse ~= 0 and ypos[2] or ypos[1] )
-            self:addx( pn == PLAYER_1 and -200 or 200 ):sleep(0.5):linear(1):addx( pn == PLAYER_1 and 200 or -200 )
-        end
+        end,
+        ["CurrentSteps"..ToEnumShortString(pn).."ChangedMessageCommand"]=function(self) self:playcommand("SetFrame") end,
     }
 end
 

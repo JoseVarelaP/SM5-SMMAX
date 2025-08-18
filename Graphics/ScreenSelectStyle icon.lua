@@ -8,7 +8,7 @@ t[#t+1] = Def.Sprite{
         self:xy( SCREEN_CENTER_X + (160-320), SCREEN_CENTER_Y + (280-240) )
     end,
     OnCommand=function (self)
-        self:diffusealpha(0):glow(color("1,1,1,0")):linear(0.2)
+        self:finishtweening():diffusealpha(0):glow(color("1,1,1,0")):linear(0.2)
         :glow(Color.White):linear(0):diffusealpha(1)
         :linear(0.2):glow(color("1,1,1,0"))
     end,
@@ -17,7 +17,7 @@ t[#t+1] = Def.Sprite{
     end,
     LoseFocusCommand=function (self)
         self:visible(false)
-    end
+    end,
 }
 
 t[#t+1] = Def.Sprite{
@@ -26,7 +26,7 @@ t[#t+1] = Def.Sprite{
         self:xy( SCREEN_CENTER_X + (480-320), SCREEN_CENTER_Y + (280-240) )
     end,
     OnCommand=function (self)
-        self:zoomy(0):bounceend(0.5):zoomy(1)
+        self:finishtweening():zoomy(0):bounceend(0.5):zoomy(1)
     end,
     GainFocusCommand=function (self)
         self:visible(true):playcommand("On")

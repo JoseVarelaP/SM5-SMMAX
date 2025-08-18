@@ -14,6 +14,9 @@ t[#t+1] = Def.Sprite{
     end,
     LoseFocusCommand=function (self)
         self:stopeffect()
+    end,
+    DisabledCommand=function(self)
+        self:diffuse(color("0.2,0.2,0.2,1"))
     end
 }
 
