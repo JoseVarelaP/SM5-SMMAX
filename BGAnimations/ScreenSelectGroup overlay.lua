@@ -11,15 +11,20 @@ local function myCustomInput(event)
         if event.GameButton == "MenuRight" or event.GameButton == "MenuDown" then
             curChoice = curChoice + 1
             if curChoice > #groupNames then curChoice = #groupNames end
+            AFManager:GetChild("Change"):play()
         end
         if event.GameButton == "MenuLeft" or event.GameButton == "MenuUp" then
             curChoice = curChoice - 1
             if curChoice < 1 then curChoice = 1 end
+            AFManager:GetChild("Change"):play()
         end
 
         if event.GameButton == "Start" then
             if curChoice > 1 then
                 GAMESTATE:SetPreferredSongGroup(groupNames[curChoice])
+                SOUND:PlayAnnouncer("select group comment general")
+            else
+                SOUND:PlayAnnouncer("select group comment all music")
             end
             SCREENMAN:GetTopScreen():StartTransitioningScreen( "SM_GoToNextScreen", 0 )
         end
@@ -33,7 +38,9 @@ local t = Def.ActorFrame{
         AFManager = self
     end,
     OnCommand=function(self)
+        SOUND:PlayAnnouncer("select group intro")
         SCREENMAN:GetTopScreen():AddInputCallback(myCustomInput)
+        AFManager:playcommand("UpdateBanner",{pack = groupNames[curChoice], choice = curChoice})
     end
 }
 
@@ -50,18 +57,20 @@ t[#t+1] = Def.ActorFrame{
         -- self:playcommand("UpdateBanner",{pack="In The Groove Rebirth"})
     end,
     UpdateBannerCommand=function(self,params)
+        self:GetChild("Fallback"):stoptweening():linear(0.2):diffusealpha( params.choice == 1 and 1 or 0 )
         self:GetChild("LowRes"):LoadFromSongGroup(params.pack)
-        -- self:GetChild("LowRes"):GetChild("Banner"):finishtweening():diffusealpha(1):sleep(0.5):linear(0.2):diffusealpha(0)
-        self:GetChild("HiRes"):LoadFromSongGroup(params.pack)
     end,
-    Def.Banner {
-        Name="HiRes",
-        OnCommand=function(self) self:scaletoclipped(140,50) end
-    },
     Def.FadingBanner {
         Name="LowRes",
         OnCommand=function(self) self:scaletoclipped(140,50) end
     },
+    Def.Sprite{
+        Texture=THEME:GetPathG("Banner","all music"),
+        Name="Fallback",
+        InitCommand=function(self)
+            self:scaletoclipped(160,50):cropleft(0.06):cropright(0.06)
+        end
+    }
 }
 
 t[#t+1] = Def.Sprite{
@@ -119,6 +128,9 @@ t[#t+1] = Def.DynamicActorScroller{
             self:GetChild("Text"):settext( grp )
             if itemIndex > 1 then
                 self:GetChild("Text"):diffuse( SONGMAN:GetSongGroupColor(grp) )
+
+                -- check width
+                self:GetChild("Text"):maxwidth(150)
             end
         end
         return #groupNames
@@ -139,6 +151,7 @@ t[#t+1] = Def.DynamicActorScroller{
         end,
         Def.Sprite{
             Texture=THEME:GetPathG("ScreenSelectGroup/GroupList","bar"),
+            Name="Bar",
             InitCommand=function(self)
                 self:shadowlength(2)
             end,
@@ -171,9 +184,16 @@ local numRows = 10
 local MusicList = Def.ActorFrame{
     InitCommand=function(self)
         self:xy( SCREEN_CENTER_X + (20-320), SCREEN_CENTER_Y + (276-240) )
+        -- self:playcommand("UpdateBanner")
     end,
     UpdateBannerCommand=function(self,params)
-        local songsInGroup = SONGMAN:GetSongsInGroup(params.pack)
+        local songsInGroup = {}
+
+        if curChoice == 1 then
+            songsInGroup = SONGMAN:GetAllSongs()
+        else
+            songsInGroup = SONGMAN:GetSongsInGroup(params.pack)
+        end
 
         for column=0,numColumns do
             for row=0,numRows do
@@ -222,6 +242,37 @@ for column=0,numColumns-1 do
     end
 end
 
+t[#t+1] = Def.BitmapText{
+    Font="_numbers2",
+    Name="Number",
+    InitCommand=function(self)
+        self:xy( SCREEN_CENTER_X + (120-320), SCREEN_CENTER_Y - 20 )
+        :halign(1)
+    end,
+    OnCommand=function(self)
+        self:addx(-SCREEN_WIDTH):bounceend(0.5):addx(SCREEN_WIDTH)
+    end,
+    OffCommand=function(self)
+        self:bouncebegin(0.5):addx(-SCREEN_WIDTH)
+    end,
+    UpdateBannerCommand=function(self,params)
+        local songsInGroup = {}
+
+        if curChoice == 1 then
+            songsInGroup = SONGMAN:GetAllSongs()
+        else
+            songsInGroup = SONGMAN:GetSongsInGroup(params.pack)
+        end
+
+        self:settext(#songsInGroup)
+    end
+}
+
 t[#t+1] = MusicList
+
+t[#t+1] = Def.Sound{
+    File=THEME:GetPathS("ScreenSelectGroup","change"),
+    Name="Change",
+}
 
 return t

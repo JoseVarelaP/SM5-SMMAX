@@ -7,6 +7,18 @@ GameColor.Difficulty.Medium = color("1,0.1,0.1,1")
 GameColor.Difficulty.Hard = color("0.2,1,0.2,1")
 GameColor.Difficulty.Challenge = color("0.2,0.6,1.0,1")
 
+Branch.TitleMenu = function()
+    if GAMESTATE:GetCoinMode() == "CoinMode_Home" then
+        return "ScreenTitleMenu"
+    end
+
+    if GAMESTATE:EnoughCreditsToJoin() then
+        return "ScreenTitleJoin"
+    else
+        return "ScreenCompany"
+    end
+end
+
 function TextBannerAfterSet(self)
     local Title=self:GetChild("Title")
 	local Subtitle=self:GetChild("Subtitle")

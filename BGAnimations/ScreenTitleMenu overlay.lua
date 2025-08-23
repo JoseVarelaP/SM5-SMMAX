@@ -27,6 +27,31 @@ t[#t+1] = Def.BitmapText{
     end
 }
 
+-- Coin Mode perks
+t[#t+1] = Def.Sprite{
+    Condition=GAMESTATE:GetCoinMode() ~= "CoinMode_Home",
+    OnCommand=function(self)
+        if GAMESTATE:GetCoinMode() == "CoinMode_Pay" then
+            if GAMESTATE:GetPremium() == "Premium_DoubleFor1Credit" then
+                self:Load( THEME:GetPathG("","ScreenTitleMenu/doublepremium") )
+                self:xy(SCREEN_CENTER_X, SCREEN_CENTER_Y + (380-240))
+                :texcoordvelocity(.3,0)
+            end
+            if GAMESTATE:GetPremium() == "Premium_2PlayersFor1Credit" then
+                self:Load( THEME:GetPathG("","ScreenTitleMenu/jointpremium") )
+                self:xy(SCREEN_CENTER_X, SCREEN_CENTER_Y + (380-240))
+                :texcoordvelocity(.3,0)
+            end
+        end
+        if GAMESTATE:GetCoinMode() == "CoinMode_Free" then
+            self:Load( THEME:GetPathG("","ScreenTitleMenu/free") )
+            self:xy(SCREEN_CENTER_X, SCREEN_CENTER_Y + (180-240) )
+            :diffuseshift():effectcolor1(color("0.5,0.5,0.5,1"))
+            :effectcolor2(Color.White)
+        end
+    end
+}
+
 t[#t+1] = loadfile( THEME:GetPathB("","SharedItems/HelpDisplay.lua") )()
 
 return t

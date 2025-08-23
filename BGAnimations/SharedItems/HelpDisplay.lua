@@ -9,7 +9,7 @@ return Def.HelpDisplay {
         local screenname = Var "LoadingScreen"
         local UseSpecialText = function()
             -- Title Menu uses special types based on the coin mode.
-            if screenname == "ScreenTitleMenu" then
+            if screenname == "ScreenTitleMenu" or screenname == "ScreenTitleJoin" then
                 local CoinMode = GAMESTATE:GetCoinMode()
                 return "HelpText".. ToEnumShortString( CoinMode )
             end
